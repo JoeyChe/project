@@ -1,0 +1,63 @@
+#
+# Warning: this is a gmake makefile.  Compile with "gmake". 
+#
+# This makefile only works under Unix (tested on Linux and Solaris).
+#
+
+#
+# Configuration
+#
+
+ROOT_PATH="C:\Program Files\Java\jdk1.7.0_51"
+JC=$(ROOT_PATH)\bin\javac.exe
+JAR=$(ROOT_PATH)\bin\jar.exe
+JFLAGS=-g -Xlint:unchecked
+
+
+
+MYLIB=.\lib\mylib.jar
+TARGET=crawler.jar
+LIB_PATH=lib;$(ROOT_PATH)\jre\lib\plugin.jar;$(MYLIB)
+SRCS=HtmlXPath.java HttpManager.java Test.java
+
+#
+# End configuration
+#
+
+
+all:  java  jar
+
+
+# Building Java classes
+java:
+	$(JC) $(JFLAGS) -classpath $(LIB_PATH) $(SRCS)
+
+    
+
+# Deleting all object files
+clean:
+	del /Q $(TARGET)
+	rmdir /s /Q build
+	del /Q *.class
+
+#
+# Release
+#
+
+# Build package
+jar:
+	mkdir build & cd build & mkdir webtools
+	cd build & $(JAR) -xvf ..\lib\mylib.jar
+	cd build & $(JAR) -xvf ..\lib\js.jar
+	@copy *.class .\build\webtools
+	cd build & $(JAR) -cfm ..\bin\$(TARGET) ..\MANIFEST.MF  org webtools
+	rmdir /s /Q build
+
+test: java test_jar
+
+test_jar:
+	mkdir build & cd build & mkdir webtools
+	cd build & $(JAR) -xvf ..\lib\mylib.jar
+	@copy *.class .\build\webtools
+	cd build & $(JAR) -cfm ..\bin\$(TARGET) ..\test.MF  org webtools
+	rmdir /s /Q build

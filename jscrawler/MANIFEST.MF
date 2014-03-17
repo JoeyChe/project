@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Implementation-Title: jscrawler
+Implementation-Version: 1.0
+Created-By: Joey
+Main-Class: org.mozilla.javascript.tools.shell.Main
+

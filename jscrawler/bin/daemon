@@ -1,0 +1,14 @@
+#!/bin/bash
+
+PATH=/usr/local/jdk/bin:$PATH
+CLASSPATH=$CLASSPATH:./:/usr/local/jdk/lib
+JAVA_HOME=/usr/local/jdk
+
+export JAVA_HOME
+export CLASSPATH
+export PATH
+
+echo "====================================================================" >> /root/project/jscrawler/bin/xxx
+date -u >> /root/project/jscrawler/bin/xxx
+echo "--------------------------------------------------------------------" >> /root/project/jscrawler/bin/xxx
+java -jar /root/project/jscrawler/bin/crawler.jar -f /root/project/jscrawler/bin/9gag.js >> /root/project/jscrawler/bin/xxx
