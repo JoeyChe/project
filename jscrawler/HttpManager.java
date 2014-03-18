@@ -46,6 +46,7 @@ public class HttpManager
      *              "passwd" : "xxx"
      *       },
      *       "contenttype" : "",
+     *       "timeout"     : 2000,
      *       "data"        : ["abc", "bcd","fff"] or {}
      *    }
      */
