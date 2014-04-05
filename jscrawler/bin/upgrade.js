@@ -6,23 +6,32 @@ credentials["credentials"]["username"] = "admin";
 credentials["credentials"]["password"] = "a10";
 
 var auth = new Object();
-auth["url"] = "https://192.168.105.224/auth";
+auth["url"] = "https://192.168.212.203/axapi/v3/auth";
 auth["charset"] = "utf-8";
 auth["method"] = "POST";
 auth["contenttype"] = "application/json";
 auth["data"] = JSON.stringify(credentials);
 
 var post = new Object();
-post["url"] = "http://www.baidu.com";
+post["url"] = "https://192.168.212.203/axapi/v3/upgrade/hd/sec";
 post["charset"] = "utf-8";
 post["method"] = "POST";
 post["contenttype"] = "application/octet-stream";
 post["file"] = "/usr/bin/ls";
-post["timeout"] = 5000;
+post["timeout"] = 500;
 
 
 var http = new HttpManager();
 
+print(JSON.stringify(auth));
+var content = http.execute(JSON.stringify(auth));
+print(content);
+var info = eval("(" + content + ")");
+print(info["authresponse"]["signature"]);
+var headers = new Object();
+headers["Authorization"] = "A10 " + info["authresponse"]["signature"];
+post["headers"] = headers;
 print(JSON.stringify(post));
+print("###################################################\n");
 var content = http.execute(JSON.stringify(post));
-//print(content);
+print(content);

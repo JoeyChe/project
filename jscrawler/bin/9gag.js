@@ -81,8 +81,11 @@ function process_div(div)
 
     var data = new Object();
     data["title"] = title;
-    data["jpg_url"] = jpg;
-    data["gif_url"] = gif != null ? gif : "";
+    if (gif != null) {
+        jpg = gif;
+    }
+
+    data["image_url"] = jpg;
     data["obtain_time"] = get_time();
     data["from_name"] = "9gag";
     data["from_url"] = new String(request["url"]);

@@ -31,6 +31,7 @@ public class HttpManager
     public static final String K_PASSWD = "passwd";
     public static final String K_DATA = "data";
     public static final String K_FILE = "file";
+    public static final String K_CHUNKED = "chunked";
     public static final String K_TIMEOUT = "timeout";
     public static final String K_CONTENT_TYPE = "contenttype";
     public static final String DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded";
@@ -47,6 +48,8 @@ public class HttpManager
      *       },
      *       "contenttype" : "",
      *       "timeout"     : 2000,
+     *       "file"        : "file path",
+     *       "chunked"     : true,
      *       "data"        : ["abc", "bcd","fff"] or {}
      *    }
      */
@@ -118,6 +121,9 @@ public class HttpManager
 
     public String execute(String jsonReq) throws Exception
     { 
+        if (null == client.getHostConfiguration()) {
+            throw new Exception("host configuration is null.");
+        }
         JSONObject obj = new JSONObject(jsonReq);
 
         String     url        = obj.getString(K_URL);
@@ -152,6 +158,9 @@ public class HttpManager
         HttpMethodBase method;
         if ( "post".equalsIgnoreCase(methodType) ) {
             method = createPostMethod(url, charset);
+            if (method != null) {
+                method.setContentChunked(true);
+            }
         } else {
             method = createGetMethod(url, charset);
         }
@@ -160,7 +169,8 @@ public class HttpManager
             Object data = request.get(K_TIMEOUT);
 
             if (data instanceof Integer) {
-                method.getParams().setParameter("http.socket.timeout", (Integer)data);
+                client.getHttpConnectionManager().getParams().setConnectionTimeout((Integer)data);
+                //method.getParams().setParameter("http.socket.timeout", (Integer)data);
             } else {
                 throw new Exception("http.sochet.timeout is no an integer.");
             }
@@ -186,8 +196,13 @@ public class HttpManager
             identifyAsDefaultBrowser(method);
         }
 
+        method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
+                new DefaultHttpMethodRetryHandler(0, false));
+        //client.getHttpConnectionManager().getConnection(method.getHostConfiguration()).getParams().setLinger(10);
+        //client.getHttpConnectionManager().getConnection(method.getHostConfiguration()).getParams().setStaleCheckingEnabled(true);
+
         try {
-            int statusCode = client.executeMethod(method);
+            int statusCode = client.executeMethod(client.getHostConfiguration(), method);
             
             // if there is redirection, try to download redirection page
             if ((statusCode == HttpStatus.SC_MOVED_TEMPORARILY) ||
@@ -208,7 +223,6 @@ public class HttpManager
 
             return method.getResponseBodyAsString();
         } catch (IOException e) {
-//            throw new org.webharvest.exception.HttpException("IO error during HTTP execution for URL: " + url, e);
             throw e;
         } finally {
             method.releaseConnection();
@@ -245,6 +259,7 @@ public class HttpManager
 
             FileRequestEntity content = new FileRequestEntity(new File((String)data), contentType);
             method.setRequestEntity(content);
+            //throw new Exception(String.valueOf(content.getContentLength()/1024/1024));
             return method;
         }
 
