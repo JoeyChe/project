@@ -2,8 +2,8 @@ importPackage(Packages.webtools);
 
 var credentials = new Object();
 credentials["credentials"] = new Object();
-credentials["credentials"]["username"] = "admin";
-credentials["credentials"]["password"] = "a10";
+credentials["credentials"]["username"] = "";
+credentials["credentials"]["password"] = "";
 
 var auth = new Object();
 auth["url"] = "https://192.168.212.203/axapi/v3/auth";
